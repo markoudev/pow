@@ -75,14 +75,21 @@
 # each platform. Otherwise, ensure the platform version is recent enough.
 
       MAC_OS_VERSION="$(sw_vers -productVersion)"
+      MAC_OS_MAJOR_VERSION="$(version_component "$MAC_OS_VERSION" 1)"
       MAC_OS_MINOR_VERSION="$(version_component "$MAC_OS_VERSION" 2)"
 
-      if [ "$MAC_OS_MINOR_VERSION" -lt 6 ]; then
+      if [ "$MAC_OS_MAJOR_VERSION" -lt 10 ]; then
+        echo "Pow required Mac OS X 10.6 or later." >&2
+        exit 1
+
+      elif [ "$MAC_OS_MAJOR_VERSION" -eq 10 ] && [ "$MAC_OS_MINOR_VERSION" -lt 6 ]; then
         echo "Pow requires Mac OS X 10.6 or later." >&2
         exit 1
 
       elif [ -z "$VERSION" ]; then
-        if [ "$MAC_OS_MINOR_VERSION" -lt 9 ]; then
+        if [ "$MAC_OS_MAJOR_VERSION" -ge 11 ]; then
+          VERSION="$LATEST_VERSION"
+        elif [ "$MAC_OS_MINOR_VERSION" -lt 9 ]; then
           VERSION="0.4.3"
         else
           VERSION="$LATEST_VERSION"
